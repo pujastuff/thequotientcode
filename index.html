@@ -318,4 +318,55 @@
                     <div class="review-author">— Ramaswamynathan Venkat</div>
                 </div>
                 <div class="review-card fade-up" style="transition-delay: 0.2s;">
-                    <p>"The Quotient Code
+                    <p>"The Quotient Code honestly made a serious impression on me, for an underrated book I knew because a friend suggested it. It’s one of those self-help books that feels especially relevant if you are in college, or entering the professional world, but I can easily see experienced professionals getting value from it too."</p>
+                    <div class="review-author">— Anirudh R</div>
+                </div>
+                <div class="review-card fade-up" style="transition-delay: 0.3s;">
+                    <p>"Just finished reading 'The Quotient Code' and wanted to share a quick thought. This feels tailor-made to become a leadership class! The balance between positive behaviors and the quiet cultural killers we normalize is powerful, and the A-Z quotient structure is perfect for discussions and workshops. It’s not about 'fixing people' it’s about helping leaders see patterns and choose better."</p>
+                    <div class="review-author">— Gayathri N</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="container author-bio fade-up">
+        <h2>Why Ramesh Narayanan Writes</h2>
+        <br>
+        <p>Ramesh Narayanan (or 'Mov' as he likes to be called) is a seasoned professional with extensive experience in the Indian IT industry, where he has built a rich and diverse career spanning technology, leadership, and people development. Alongside his corporate journey, he successfully set up and ran a bootstrapped e-commerce startup, gaining first-hand experience in entrepreneurship and business building.</p>
+        <p>He lives in Chennai with his wife and two children, and balances his professional life with a deep passion for travel and self-discovery. A lifelong traveler—physically, mentally, and spiritually—Ramesh sees every journey as a source of insight, learning, and perspective.</p>
+        <p>Driven by a mission to share the lessons from his experiences, he has authored The Quotient Code, focused on telling meaningful stories drawn from work, life, and the road. Through his writing, he hopes to help readers reflect, grow, and make better choices, one quotient at a time.</p>
+    </section>
+
+    <footer>
+        <div class="container fade-up">
+            <h2>Reach Out to Ramesh</h2>
+            <div class="contact-info">
+                <div><strong>Phone:</strong> +91-9xxxx-xxxxx</div>
+                <div><strong>Email:</strong> pujastuff@gmail.com</div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.15
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target); // Stop observing once visible
+                    }
+                });
+            }, observerOptions);
+
+            const animatedElements = document.querySelectorAll('.fade-up');
+            animatedElements.forEach(el => observer.observe(el));
+        });
+    </script>
+</body>
+</html>
