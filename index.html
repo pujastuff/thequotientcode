@@ -108,20 +108,129 @@
         }
 
         .hero-image {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            aspect-ratio: 3/4;
+            perspective: 1500px; 
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
         }
 
-        .hero-image img {
+        /* Set the exact size of the book */
+        .book-3d-wrapper {
+            width: 300px;
+            height: 450px;
+        }
+
+        /* The 3D container */
+        .book-box {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            animation: spinBook3D 16s linear infinite; 
+        }
+
+        /* Base styles for all 6 sides */
+        .book-face {
+            position: absolute;
+            background-color: #fff;
+            /* A subtle border makes the edges look crisp */
+            border: 1px solid rgba(0,0,0,0.1); 
+        }
+
+        .book-face img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+        }
+
+        /* --- Front and Back (300px by 450px) --- */
+        .book-front, .book-back {
+            width: 300px;
+            height: 450px;
+            top: 0;
+            left: 0;
+        }
+
+        /* Push the front out by half the book's thickness (20px) */
+        .book-front {
+            transform: translateZ(20px);
+        }
+
+        /* Push the back out the other way and flip it */
+        .book-back {
+            transform: rotateY(180deg) translateZ(20px);
+        }
+
+        /* --- The Spine (Left Edge) --- */
+        .book-spine {
+            width: 40px;  /* This is the book's thickness */
+            height: 450px;
+            top: 0;
+            left: 50%;
+            margin-left: -20px;
+            transform: rotateY(-90deg) translateZ(150px);
+            background-color: var(--bg-navy); /* Matches your theme */
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-heading);
+            font-size: 1.2rem;
+            white-space: nowrap;
+        }
+
+        .book-spine span {
+            transform: rotate(-90deg); /* Rotates the text to run down the spine */
+        }
+
+        /* --- The Pages (Textured Paper Edges) --- */
+        .book-right {
+            width: 40px;
+            height: 450px;
+            top: 0;
+            left: 50%;
+            margin-left: -20px;
+            transform: rotateY(90deg) translateZ(150px);
+            /* Simulates stacked pages */
+            background: repeating-linear-gradient(to right, #f4f4f4 0px, #e0e0e0 2px, #f4f4f4 4px);
+        }
+
+        .book-top {
+            width: 300px;
+            height: 40px;
+            left: 0;
+            top: 50%;
+            margin-top: -20px;
+            transform: rotateX(90deg) translateZ(225px);
+            background: repeating-linear-gradient(to bottom, #f4f4f4 0px, #e0e0e0 2px, #f4f4f4 4px);
+        }
+
+        .book-bottom {
+            width: 300px;
+            height: 40px;
+            left: 0;
+            top: 50%;
+            margin-top: -20px;
+            transform: rotateX(-90deg) translateZ(225px);
+            background: repeating-linear-gradient(to bottom, #f4f4f4 0px, #e0e0e0 2px, #f4f4f4 4px);
+        }
+
+        /* --- 3D Spin Keyframes --- */
+        @keyframes spinBook3D {
+            0% {
+                /* Tilted slightly downward (rotateX) so you can see the top pages */
+                transform: rotateX(15deg) rotateY(0deg);
+            }
+            100% {
+                transform: rotateX(15deg) rotateY(360deg);
+            }
+        }
+
+        /* Shrink the book slightly on very small mobile screens */
+        @media (max-width: 400px) {
+            .book-3d-wrapper {
+                transform: scale(0.8);
+            }
         }
 
         /* --- About Book Section --- */
@@ -278,12 +387,40 @@
     </nav>
 
     <header class="container hero">
+        
         <div class="hero-text fade-up">
             <h1>The Quotient Code</h1>
+            <p style="font-size: 1.5rem; color: var(--bg-navy); font-weight: 600; margin-top: 1rem;">
+                Life Forces That Shape Who We Become
+            </p>
         </div>
+
         <div class="hero-image fade-up" style="transition-delay: 0.2s;">
-            <img src="cover.png" alt="The Quotient Code Book Cover">
+            <div class="book-3d-wrapper">
+                <div class="book-box">
+                    
+                    <div class="book-face book-front">
+                        <img src="qcode.jpg" alt="The Quotient Code Front Cover">
+                    </div>
+                    
+                    <div class="book-face book-back">
+                        <img src="qback.jpeg" alt="The Quotient Code Back Cover">
+                    </div>
+                    
+                    <div class="book-face book-spine">
+                        <span>The Quotient Code</span>
+                    </div>
+                    
+                    <div class="book-face book-right"></div>
+                    
+                    <div class="book-face book-top"></div>
+                    
+                    <div class="book-face book-bottom"></div>
+
+                </div>
+            </div>
         </div>
+        
     </header>
 
     <section class="about-book">
@@ -331,20 +468,10 @@
 
     <section class="container author-bio fade-up">
         <h2>Why Ramesh Narayanan Writes</h2>
-        
-        <div style="display: flex; gap: 2rem; align-items: flex-start; margin-top: 2rem;">
-            
-            <div style="flex-shrink: 0; width: 250px;">
-                <img src="https://pujastuff.my.canva.site/index/_assets/media/1bbb78b4456c29a2b8a16dbddca7d2ea.jpg" alt="Ramesh Narayanan" style="width: 100%; border-radius: 8px; box-shadow: 0 10px 20px rgba(0,0,0,0.1);">
-            </div>
-
-            <div>
-                <p>Ramesh Narayanan (or 'Mov' as he likes to be called) is a seasoned professional with extensive experience in the Indian IT industry, where he has built a rich and diverse career spanning technology, leadership, and people development. Alongside his corporate journey, he successfully set up and ran a bootstrapped e-commerce startup, gaining first-hand experience in entrepreneurship and business building.</p>
-                <p>He lives in Chennai with his wife and two children, and balances his professional life with a deep passion for travel and self-discovery. A lifelong traveler—physically, mentally, and spiritually—Ramesh sees every journey as a source of insight, learning, and perspective.</p>
-                <p>Driven by a mission to share the lessons from his experiences, he has authored The Quotient Code, focused on telling meaningful stories drawn from work, life, and the road. Through his writing, he hopes to help readers reflect, grow, and make better choices, one quotient at a time.</p>
-            </div>
-            
-        </div>
+        <br>
+        <p>Ramesh Narayanan (or 'Mov' as he likes to be called) is a seasoned professional with extensive experience in the Indian IT industry, where he has built a rich and diverse career spanning technology, leadership, and people development. Alongside his corporate journey, he successfully set up and ran a bootstrapped e-commerce startup, gaining first-hand experience in entrepreneurship and business building.</p>
+        <p>He lives in Chennai with his wife and two children, and balances his professional life with a deep passion for travel and self-discovery. A lifelong traveler—physically, mentally, and spiritually—Ramesh sees every journey as a source of insight, learning, and perspective.</p>
+        <p>Driven by a mission to share the lessons from his experiences, he has authored The Quotient Code, focused on telling meaningful stories drawn from work, life, and the road. Through his writing, he hopes to help readers reflect, grow, and make better choices, one quotient at a time.</p>
     </section>
 
     <footer>
