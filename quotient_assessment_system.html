@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE QUOTIENT CODE - Performance Assessment</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <style>
+        :root {
+            --primary: #1e293b;
+            --accent-pos: #10b981;
+            --accent-neg: #ef4444;
+            --bg: #f1f5f9;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--primary);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+
+        .step {
+            display: none;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--accent-pos);
+            width: 0%;
+            transition: 0.3s;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        input[type="text"],
+        input[type="email"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        .dimension-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            margin-bottom: 40px;
+            overflow: hidden;
+        }
+
+        .dimension-header {
+            background: #f8fafc;
+            padding: 15px 20px;
+            font-weight: 800;
+            border-bottom: 1px solid #e2e8f0;
+            text-transform: uppercase;
+            color: #64748b;
+        }
+
+        .question-row {
+            padding: 20px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .q-text {
+            font-weight: 500;
+            display: flex;
+            gap: 10px;
+        }
+
+        .q-num {
+            color: #94a3b8;
+            min-width: 25px;
+        }
+
+        .rating-scale {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 400px;
+            margin-top: 5px;
+        }
+
+        .rating-scale span {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            font-weight: 700;
+        }
+
+        .radio-options {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            display: inline-block;
+            width: 100%;
+            padding: 18px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .btn-pos {
+            background: var(--accent-pos);
+        }
+
+        .report-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .res-card {
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .res-pos {
+            background: #ecfdf5;
+            border-left: 5px solid var(--accent-pos);
+        }
+
+        .res-neg {
+            background: #fef2f2;
+            border-left: 5px solid var(--accent-neg);
+        }
+
+        .insight-box {
+            margin-bottom: 15px;
+        }
+
+        .insight-title {
+            font-weight: 800;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .insight-list {
+            margin: 0;
+            padding-left: 18px;
+            font-size: 0.9rem;
+        }
+
+        #loadingMsg {
+            text-align: center;
+            color: var(--accent-pos);
+            font-weight: bold;
+            display: none;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <header>
+            <h1>THE QUOTIENT CODE</h1>
+            <p>Advanced Performance Assessment Tool</p>
+        </header>
+
+        <div class="progress-bar">
+            <div id="progressFill" class="progress-fill"></div>
+        </div>
+
+        <div id="step1" class="step active">
+            <h2 style="text-align:center;">Welcome</h2>
+            <p style="text-align:center; color: #64748b; margin-bottom:30px;">Please enter your details to begin the
+                156-question assessment.</p>
+            <div class="input-group">
+                <label>Full Name</label>
+                <input type="text" id="userName" placeholder="John Doe">
+            </div>
+            <div class="input-group">
+                <label>Email Address</label>
+                <input type="email" id="userEmail" placeholder="john@example.com">
+            </div>
+            <button class="btn" onclick="startAssessment()">Start Assessment</button>
+        </div>
+
+        <div id="step2" class="step">
+            <div id="questionsContainer"></div>
+            <button id="submitBtn" class="btn btn-pos" onclick="generateReport()">Finalize & Export Results</button>
+            <div id="loadingMsg">Processing results and sending email...</div>
+        </div>
+
+        <div id="step3" class="step">
+            <h2 style="text-align:center;">Your Behavioral Analysis</h2>
+            <div class="report-grid">
+                <div class="res-card res-pos">
+                    <h3 style="color:#065f46">Top 3 Strengths (+Q)</h3>
+                    <div id="posInsights"></div>
+                </div>
+                <div class="res-card res-neg">
+                    <h3 style="color:#991b1b">Top 3 Risks (-Q)</h3>
+                    <div id="negInsights"></div>
+                </div>
+            </div>
+            <div
+                style="background: white; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; margin-top: 20px;">
+                <canvas id="radarChart"></canvas>
+            </div>
+            <p style="text-align:center; color:#64748b; margin-top:30px;">A copy of your results has been emailed and a
+                CSV has been downloaded.</p>
+            <button class="btn" onclick="location.reload()">Take Assessment Again</button>
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIGURATION ---
+        (function () {
+            emailjs.init("WT7U0SsNkQ2ahDnzX"); // REPLACE THIS
+        })();
+        const EMAIL_SERVICE_ID = "service_hv24vvs"; // REPLACE THIS
+        const EMAIL_TEMPLATE_ID = "template_4w4qvnf"; // REPLACE THIS
+
+        const appData = [
+            { "quotient": "+AQ Appreciation", "type": "Positive", "dimension": "People", "questions": ["I acknowledge contributions in real time rather than waiting for formal reviews", "I make appreciation specific and meaningful", "I use multiple ways (verbal, written, public) to appreciate others"], "points": ["Boosts team morale through validation.", "Creates a positive feedback loop.", "Strengthens professional bonds."] },
+            { "quotient": "+BQ Benevolence", "type": "Positive", "dimension": "People", "questions": ["I help colleagues without expecting anything in return", "I step in to support others proactively", "I contribute to a positive environment through small acts of kindness"], "points": ["Fosters a culture of safety.", "Encourages reciprocal cooperation.", "Builds high social capital."] },
+            { "quotient": "+CQ Culture", "type": "Positive", "dimension": "People", "questions": ["I reinforce organizational values through daily behavior", "I speak up when actions contradict culture", "I contribute to psychological safety in teams"], "points": ["Acts as a values guardian.", "Ensures behavioral alignment.", "Promotes shared purpose."] },
+            { "quotient": "+DQ Diligence", "type": "Positive", "dimension": "Organization", "questions": ["I prepare thoroughly before executing important tasks", "I pay attention to detail to ensure high-quality output", "I follow through on commitments consistently"], "points": ["Ensures high accuracy.", "Reduces the risk of rework.", "Builds reliability."] },
+            { "quotient": "+EQ Empathy", "type": "Positive", "dimension": "People", "questions": ["I actively listen to others without interrupting", "I consider how my decisions affect others' emotions", "I validate others' feelings even when I disagree with them"], "points": ["Facilitates deep understanding.", "Enables compassionate leadership.", "Navigates dynamics sensitively."] },
+            { "quotient": "+FQ Finance", "type": "Positive", "dimension": "Business", "questions": ["I demonstrate a clear understanding of financial implications in decisions", "I manage budgets or resources responsibly", "I look for ways to optimize costs and improve efficiency"], "points": ["Ensures fiscal responsibility.", "Aligns tactics with bottom-line.", "Drives growth efficiency."] },
+            { "quotient": "+GQ Gratitude", "type": "Positive", "dimension": "Mindset", "questions": ["I regularly express thankfulness to my team and peers", "I focus on what is working well rather than just identifying gaps", "I acknowledge the role of luck or support in my successes"], "points": ["Maintains team resilience.", "Reduces stress levels.", "Promotes grounded leadership."] },
+            { "quotient": "+HQ Humaneness", "type": "Positive", "dimension": "Values", "questions": ["I treat everyone with dignity regardless of their position", "I prioritize people's well-being during difficult times", "I show kindness when others make mistakes"], "points": ["Upholds fundamental dignity.", "Builds ethical legacy.", "Reduces employee turnover."] },
+            { "quotient": "+IQ Inspiration", "type": "Positive", "dimension": "Leadership", "questions": ["I share a compelling vision that motivates others", "I lead by example in challenging situations", "I empower others to believe in their own potential"], "points": ["Ignites passion in others.", "Translates strategy to action.", "Develops next-gen leaders."] },
+            { "quotient": "+JQ Joy", "type": "Positive", "dimension": "Energy", "questions": ["I bring a positive energy to the workplace", "I find meaning and satisfaction in my daily tasks", "I encourage a light-hearted yet productive atmosphere"], "points": ["Infects workspace with optimism.", "Helps team cope with pressure.", "Increases daily engagement."] },
+            { "quotient": "+KQ Knowledge", "type": "Positive", "dimension": "Capability", "questions": ["I actively seek opportunities to learn new skills", "I share my expertise to help others grow", "I stay updated on industry trends and developments"], "points": ["Ensures competitive edge.", "Promotes learning culture.", "Resource for the organization."] },
+            { "quotient": "+LQ Love", "type": "Positive", "dimension": "Values", "questions": ["I build deep and meaningful connections with colleagues", "I genuinely care about the growth and success of others", "I foster an environment of care and mutual support"], "points": ["Creates high-trust relations.", "Promotes deep commitment.", "Supports colleagues during lows."] },
+            { "quotient": "+MQ Motivation", "type": "Positive", "dimension": "Energy", "questions": ["I maintain a high level of drive even during setbacks", "I take initiative without needing constant direction", "I inspire others to push through difficult challenges"], "points": ["Drives results under adversity.", "Self-starter requiring low oversight.", "Maintains momentum."] },
+            { "quotient": "+NQ Neatness", "type": "Positive", "dimension": "Organization", "questions": ["I keep my workspace and digital files organized", "I present information in a clear and structured manner", "I value order and system in my execution"], "points": ["Enhances workflow clarity.", "Promotes professional standard.", "Ensures easy data access."] },
+            { "quotient": "+OQ Optimism", "type": "Positive", "dimension": "Mindset", "questions": ["I focus on possibilities rather than just problems", "I maintain a positive outlook during uncertain times", "I help others see the silver lining in failures"], "points": ["Fuels innovation and hope.", "Buffers team from negativity.", "Encourages a can-do attitude."] },
+            { "quotient": "+PQ Perseverance", "type": "Positive", "dimension": "Execution", "questions": ["I stay committed to long-term goals despite obstacles", "I finish what I start regardless of difficulties", "I show resilience when faced with repeated failures"], "points": ["Demonstrates grit for success.", "Ensures project completion.", "Resilience under high pressure."] },
+            { "quotient": "+QQ Quintessence", "type": "Positive", "dimension": "Identity", "questions": ["I align my work with my core purpose and values", "I represent the best version of myself in professional settings", "I bring a unique and valuable essence to the team"], "points": ["Authentic alignment.", "Unique irreplaceable value.", "Purposeful team presence."] },
+            { "quotient": "+RQ Respect", "type": "Positive", "dimension": "Values", "questions": ["I value diverse perspectives even when they differ from mine", "I maintain professional courtesy under pressure", "I acknowledge the boundaries and autonomy of others"], "points": ["Inclusive problem solver.", "Minimizes toxic friction.", "Promotes safe collaboration."] },
+            { "quotient": "+SQ Social", "type": "Positive", "dimension": "Collaboration", "questions": ["I build strong professional networks internally and externally", "I navigate group dynamics effectively to achieve goals", "I contribute to a sense of community within the team"], "points": ["Bridge-builder across teams.", "Political navigation master.", "Creates belonging."] },
+            { "quotient": "+TQ Trustworthiness", "type": "Positive", "dimension": "Values", "questions": ["I follow through on promises and commitments", "I am transparent and honest in my communication", "I maintain confidentiality when required"], "points": ["Bedrock of effective relations.", "Reduces micromanagement.", "Ensures high integrity."] },
+            { "quotient": "+UQ Uniqueness", "type": "Positive", "dimension": "Identity", "questions": ["I leverage my unique strengths to add value", "I encourage others to express their distinct perspectives", "I embrace originality in problem-solving"], "points": ["Drives competitive edge.", "Prevents groupthink.", "Innovative culture driver."] },
+            { "quotient": "+VQ Vitality", "type": "Positive", "dimension": "Health", "questions": ["I bring high energy and enthusiasm to my work", "I maintain a healthy balance between work and rest", "I inspire others with my drive and vigor"], "points": ["Stamina for high-intensity.", "Infects team with drive.", "Sustainable performance."] },
+            { "quotient": "+WQ Wellbeing", "type": "Positive", "dimension": "Balance", "questions": ["I prioritize my mental and physical health", "I set boundaries to prevent burnout", "I encourage a culture of wellness in the team"], "points": ["Prevents long-term burnout.", "Sets healthy precedent.", "Maintains mental clarity."] },
+            { "quotient": "+XQ X-Factor", "type": "Positive", "dimension": "Strategy", "questions": ["I offer innovative solutions that differentiate the business", "I possess a distinct quality that elevates performance", "I identify opportunities that others might miss"], "points": ["Identifies rare growth edges.", "Unique advantage.", "Solves complex problems."] },
+            { "quotient": "+YQ YinYang", "type": "Positive", "dimension": "Balance", "questions": ["I balance logic with intuition in decision-making", "I manage competing priorities with composure", "I adapt my approach between stability and change"], "points": ["Paradox navigator.", "Holistic decision maker.", "Stability/Change balance."] },
+            { "quotient": "+ZQ Zen", "type": "Positive", "dimension": "Mindset", "questions": ["I remain calm and centered during high-stress situations", "I practice mindfulness to stay focused on the present", "I respond thoughtfully rather than reacting impulsively"], "points": ["Stabilizing force.", "Logical under stress.", "Focused work approach."] },
+
+            // Negative
+            { "quotient": "-AQ Arrogance", "type": "Negative", "dimension": "Values", "questions": ["I dismiss others' opinions if they differ from mine", "I believe I am always more competent than my peers", "I take credit for others' work or ideas"], "points": ["Stifles collaboration.", "Personal blind spots.", "Damages trust via ego."] },
+            { "quotient": "-BQ Bureaucracy", "type": "Negative", "dimension": "Organization", "questions": ["I prioritize rules and procedures over practical results", "I make processes unnecessarily complex for others", "I resist changes that simplify existing systems"], "points": ["Slows agility.", "Red tape friction.", "Compliance over impact."] },
+            { "quotient": "-CQ Chauvinism", "type": "Negative", "dimension": "Values", "questions": ["I show favoritism toward people like me", "I dismiss perspectives from different departments or cultures", "I believe my way is the only right way"], "points": ["Undermines diversity.", "Limits varied views.", "Silo mentality."] },
+            { "quotient": "-DQ Distrust", "type": "Negative", "dimension": "Values", "questions": ["I question others' motives without evidence", "I withhold information to maintain control", "I struggle to rely on others to finish tasks"], "points": ["Slows execution.", "Secretive culture.", "Drains team energy."] },
+            { "quotient": "-EQ Ego", "type": "Negative", "dimension": "Identity", "questions": ["I focus more on my status than on team success", "I react defensively when my ideas are challenged", "I seek constant validation for my contributions"], "points": ["Perception over goals.", "Hard to coach.", "Validation drain."] },
+            { "quotient": "-FQ Frivolity", "type": "Negative", "dimension": "Discipline", "questions": ["I treat serious work matters with a lack of focus", "I spend too much time on non-essential activities", "I struggle to maintain focus during critical tasks"], "points": ["Low gravitas.", "Wastes team time.", "Low mission commitment."] },
+            { "quotient": "-GQ Greediness", "type": "Negative", "dimension": "Values", "questions": ["I prioritize personal gain over team outcomes", "I hoard resources or opportunities for myself", "I am never satisfied regardless of the achievements"], "points": ["Erodes cohesion.", "Zero-sum mentality.", "Ethical risk."] },
+            { "quotient": "-HQ Hypocrisy", "type": "Negative", "dimension": "Values", "questions": ["I set standards for others that I do not follow", "I say one thing but do another when under pressure", "I hide my true intentions behind professional jargon"], "points": ["Damages credibility.", "Rule confusion.", "Encourages dishonesty."] },
+            { "quotient": "-IQ Impersonality", "type": "Negative", "dimension": "People", "questions": ["I treat colleagues as mere tools for execution", "I avoid building personal connections at work", "I show little concern for others' personal lives or challenges"], "points": ["Prevents loyalty.", "Cold/unapproachable.", "Reduces engagement."] },
+            { "quotient": "-JQ Jealousy", "type": "Negative", "dimension": "Mindset", "questions": ["I feel resentful when others receive recognition", "I compare my success with others' constantly", "I find it hard to celebrate peers' achievements"], "points": ["Toxic competition.", "Demotivates peers.", "Others vs self-growth."] },
+            { "quotient": "-KQ Kafkaesque", "type": "Negative", "dimension": "Organization", "questions": ["I create circular or confusing processes", "I avoid giving straight answers to simple questions", "I make others feel lost in a maze of procedures"], "points": ["Immense frustration.", "Culture of confusion.", "Productivity waste."] },
+            { "quotient": "-LQ Laxity", "type": "Negative", "dimension": "Execution", "questions": ["I allow standards to drop for the sake of speed", "I ignore errors that don't immediately cause issues", "I am inconsistent in following through on details"], "points": ["Quality risk.", "Signals low standards.", "Potential for failure."] },
+            { "quotient": "-MQ Machiavellianism", "type": "Negative", "dimension": "Strategy", "questions": ["I use manipulation to achieve my goals", "I view relationships purely as transactional", "I believe the end justifies any means used"], "points": ["Destroys trust.", "Paranoid environment.", "Reputational risk."] },
+            { "quotient": "-NQ Narcissism", "type": "Negative", "dimension": "Identity", "questions": ["I expect special treatment due to my role", "I dominate conversations to focus on my achievements", "I lack empathy for others' struggles if they don't affect me"], "points": ["Invisible team.", "Personal glory center.", "Drives away talent."] },
+            { "quotient": "-OQ Obtuse", "type": "Negative", "dimension": "Strategy", "questions": ["I fail to see obvious risks or opportunities", "I ignore feedback that suggests I am wrong", "I struggle to grasp complex or subtle dynamics"], "points": ["Strategic errors.", "Explain-the-obvious drain.", "Risk exposure."] },
+            { "quotient": "-PQ Pessimism", "type": "Negative", "dimension": "Mindset", "questions": ["I focus primarily on why things will fail", "I discourage others from trying new things", "I am the first to complain about changes"], "points": ["Innovation drain.", "Kills new ideas.", "Stuckness culture."] },
+            { "quotient": "-QQ Quixotic", "type": "Negative", "dimension": "Strategy", "questions": ["I pursue unrealistic goals that lack practical foundation", "I ignore data in favor of personal ideals", "I lead others into projects with low chances of success"], "points": ["Wastes resources.", "Team disappointment.", "Low data judgment."] },
+            { "quotient": "-RQ Retribution", "type": "Negative", "dimension": "Leadership", "questions": ["I hold grudges against colleagues who disagree with me", "I look for ways to 'get even' after a conflict", "I use my authority to penalize those who challenge me"], "points": ["Silences debate.", "Toxic culture.", "High turnover risk."] },
+            { "quotient": "-SQ Shortsightedness", "type": "Negative", "dimension": "Strategy", "questions": ["I prioritize immediate results over long-term health", "I ignore the future implications of today's decisions", "I fail to plan for predictable risks"], "points": ["Sacrifices future wins.", "Reactive style.", "Unprepared for change."] },
+            { "quotient": "-TQ Toxicity", "type": "Negative", "dimension": "People", "questions": ["I contribute to workplace gossip or negativity", "I undermine team morale with critical comments", "I make others feel drained after interacting with me"], "points": ["Rapid negativity spread.", "Mental health damage.", "High exit risk."] },
+            { "quotient": "-UQ Utopian", "type": "Negative", "dimension": "Strategy", "questions": ["I expect perfection that is unattainable", "I criticize realistic solutions for not being ideal", "I get frustrated when others don't share my perfect vision"], "points": ["Blocks 'good' solutions.", "Sense of failure.", "Reality detachment."] },
+            { "quotient": "-VQ Vitriol", "type": "Negative", "dimension": "People", "questions": ["I react aggressively to disagreements", "I communicate in a confrontational manner", "I create discomfort through tone"], "points": ["Shuts down talk.", "Reputation damage.", "High stress driver."] },
+            { "quotient": "-WQ Whatever", "type": "Negative", "dimension": "Mindset", "questions": ["I show indifference toward outcomes", "I lack ownership in tasks", "I disengage easily from responsibilities"], "points": ["Low skin-in-the-game.", "Burden on others.", "Growth stopper."] },
+            { "quotient": "-XQ Xenophobia", "type": "Negative", "dimension": "Values", "questions": ["I am uncomfortable with unfamiliar cultures or ideas", "I resist diversity in teams", "I prefer working with similar people"], "points": ["Hostile to diversity.", "Cuts off global view.", "Ethical violations."] },
+            { "quotient": "-YQ Yellow", "type": "Negative", "dimension": "Courage", "questions": ["I avoid taking risks due to fear", "I hesitate to make decisions", "I back out under pressure"], "points": ["Paralysis risks.", "Weak leadership.", "Abandonment of goals."] },
+            { "quotient": "-ZQ Zombie", "type": "Negative", "dimension": "Energy", "questions": ["I operate without enthusiasm or energy", "I go through tasks mechanically", "I lack initiative"], "points": ["Apathy drain.", "Bare minimum perform.", "Easily replaceable."] }
+        ];
+
+        const groups = {};
+        appData.forEach(q => {
+            if (!groups[q.dimension]) groups[q.dimension] = [];
+            groups[q.dimension].push(q);
+        });
+
+        function startAssessment() {
+            const name = document.getElementById('userName').value;
+            const email = document.getElementById('userEmail').value;
+            if (!name || !email) return alert("Please enter Name and Email to start.");
+
+            document.getElementById('step1').classList.remove('active');
+            document.getElementById('step2').classList.add('active');
+            document.getElementById('progressFill').style.width = "50%";
+            renderQuestions();
+            window.scrollTo(0, 0);
+        }
+
+        function renderQuestions() {
+            const container = document.getElementById('questionsContainer');
+            let qNum = 1;
+            for (const dim in groups) {
+                const div = document.createElement('div');
+                div.className = 'dimension-card';
+                div.innerHTML = `<div class="dimension-header">${dim}</div>`;
+                groups[dim].forEach(qObj => {
+                    qObj.questions.forEach((qText, i) => {
+                        const row = document.createElement('div');
+                        row.className = 'question-row';
+                        row.innerHTML = `
+                    <div class="q-text"><span class="q-num">${qNum}.</span> ${qText}</div>
+                    <div class="rating-scale">
+                        <span>RARELY</span>
+                        <div class="radio-options">
+                            ${[1, 2, 3, 4, 5].map(v => `<input type="radio" name="${qObj.quotient}_${i}" value="${v}" required>`).join('')}
+                        </div>
+                        <span>ALWAYS</span>
+                    </div>
+                `;
+                        div.appendChild(row);
+                        qNum++;
+                    });
+                });
+                container.appendChild(div);
+            }
+        }
+
+        function generateReport() {
+            const radios = document.querySelectorAll('input[type="radio"]:checked');
+            if (radios.length < 5) return alert(`Please answer all questions. (Answered ${radios.length} out of 156)`);
+
+            document.getElementById('submitBtn').style.display = 'none';
+            document.getElementById('loadingMsg').style.display = 'block';
+
+            const results = {};
+            const dimAgg = {};
+
+            appData.forEach(qObj => {
+                let total = 0;
+                qObj.questions.forEach((_, i) => {
+                    total += parseInt(document.querySelector(`input[name="${qObj.quotient}_${i}"]:checked`).value);
+                });
+                const score = total / 3;
+                results[qObj.quotient] = { score, type: qObj.type, points: qObj.points };
+
+                if (!dimAgg[qObj.dimension]) dimAgg[qObj.dimension] = { pos: 0, neg: 0, pc: 0, nc: 0 };
+                if (qObj.type === 'Positive') { dimAgg[qObj.dimension].pos += score; dimAgg[qObj.dimension].pc++; }
+                else { dimAgg[qObj.dimension].neg += score; dimAgg[qObj.dimension].nc++; }
+            });
+
+            const posTop = Object.entries(results).filter(x => x[1].type === 'Positive').sort((a, b) => b[1].score - a[1].score).slice(0, 3);
+            const negTop = Object.entries(results).filter(x => x[1].type === 'Negative').sort((a, b) => b[1].score - a[1].score).slice(0, 3);
+
+            // CSV Download
+            const csvData = [
+                ["User", document.getElementById('userName').value],
+                ["Email", document.getElementById('userEmail').value],
+                ["Type", "Quotient", "Score"],
+                ...posTop.map(x => ["Strength", x[0], x[1].score.toFixed(1)]),
+                ...negTop.map(x => ["Risk", x[0], x[1].score.toFixed(1)])
+            ];
+            const csvContent = "data:text/csv;charset=utf-8," + csvData.map(e => e.join(",")).join("\n");
+            const link = document.createElement("a");
+            link.href = encodeURI(csvContent);
+            link.download = "Quotient_Report.csv";
+            link.click();
+
+            // Email Sending
+            // --- Updated Email Sending Logic ---
+            const userEmail = document.getElementById('userEmail').value;
+            const adminEmail = "pujastuff@gmail.com";
+
+            const commonParams = {
+                user_name: document.getElementById('userName').value,
+                user_email: userEmail,
+                pos_results: posTop.map(x => `${x[0]} (${x[1].score.toFixed(1)})`).join(", "),
+                neg_results: negTop.map(x => `${x[0]} (${x[1].score.toFixed(1)})`).join(", ")
+            };
+
+            // Send to User
+            emailjs.send(EMAIL_SERVICE_ID, EMAIL_TEMPLATE_ID, { ...commonParams, send_to: userEmail });
+
+            // Send to Admin
+            emailjs.send(EMAIL_SERVICE_ID, EMAIL_TEMPLATE_ID, { ...commonParams, send_to: adminEmail })
+                .then(function () {
+                    finalizeUI(posTop, negTop, dimAgg);
+                }, function (error) {
+                    console.error('Email failed', error);
+                    alert("Email delivery failed, but results are shown locally.");
+                    finalizeUI(posTop, negTop, dimAgg);
+                });
+
+            function finalizeUI(posTop, negTop, dimAgg) {
+                document.getElementById('posInsights').innerHTML = posTop.map(x => `<div class="insight-box"><span class="insight-title">${x[0]} (${x[1].score.toFixed(1)})</span><ul class="insight-list">${x[1].points.map(p => `<li>${p}</li>`).join('')}</ul></div>`).join('');
+                document.getElementById('negInsights').innerHTML = negTop.map(x => `<div class="insight-box"><span class="insight-title">${x[0]} (${x[1].score.toFixed(1)})</span><ul class="insight-list">${x[1].points.map(p => `<li>${p}</li>`).join('')}</ul></div>`).join('');
+
+                const labels = Object.keys(dimAgg);
+                new Chart(document.getElementById('radarChart'), {
+                    type: 'radar',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            { label: 'Positives', data: labels.map(l => dimAgg[l].pos / dimAgg[l].pc), borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.2)' },
+                            { label: 'Negatives', data: labels.map(l => dimAgg[l].neg / dimAgg[l].nc), borderColor: '#ef4444', backgroundColor: 'rgba(239, 68, 68, 0.2)' }
+                        ]
+                    },
+                    options: { scales: { r: { min: 0, max: 5 } } }
+                });
+
+                document.getElementById('step2').classList.remove('active');
+                document.getElementById('step3').classList.add('active');
+                document.getElementById('progressFill').style.width = "100%";
+                window.scrollTo(0, 0);
+            }
+        }
+    </script>
+</body>
+
+</html>
