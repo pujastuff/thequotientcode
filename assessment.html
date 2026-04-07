@@ -202,6 +202,19 @@
             display: none;
             margin-top: 15px;
         }
+        .disclaimer-text {
+    font-size: 0.8rem;
+    color: #64748b;
+    margin-top: 8px;
+    font-style: italic;
+    line-height: 1.4;
+}
+
+/* Optional: Pulse effect on the star to draw attention */
+label span {
+    font-weight: bold;
+    margin-left: 2px;
+}
     </style>
 </head>
 
@@ -226,9 +239,12 @@
                 <input type="text" id="userName" placeholder="John Doe">
             </div>
             <div class="input-group">
-                <label>Email Address</label>
-                <input type="email" id="userEmail" placeholder="john@example.com">
-            </div>
+    <label>Email Address <span style="color: var(--accent-neg);">*</span></label>
+    <input type="email" id="userEmail" placeholder="john@example.com">
+    <p class="disclaimer-text">
+        * Your results will be sent to this email address and shared with administration for performance tracking.
+    </p>
+</div>
             <button class="btn" onclick="startAssessment()">Start Assessment</button>
         </div>
 
